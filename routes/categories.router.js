@@ -2,12 +2,12 @@ const express = require('express');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    const { categoryId, productId } = req.params;
-    res.send({
-        
-        categoryId 25,
-        productId: 23,
+router.get('/:id', (req, res) => {
+    const {id, categoryId, productId } = req.params;
+    res.status(200).json({
+        categoryId,
+        productId,
+        id,
     });
-})
+});
 module.exports = router;

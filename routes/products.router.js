@@ -1,30 +1,50 @@
-const { faker } = require('@faker-js/faker');
+// const { faker } = require('@faker-js/faker');
 const express = require('express');
 
 const router = express.Router(); 
 
-router.get('/', (req, res ) => {
-    const products = []
-    const { size } = req.query;
-    const limit = size || 10;
-    for (let index = 0; index < limit; index++) {
-        products.push({
-        name: faker.commerce.productName(),
-        price: parseInt(faker.commerce.price(), 10),
-        image: faker.image.urlPicsumPhotos(), 
-        });
+router.get('/:id', (req, res ) => {
+    const{ id } = req.params;
+    if (id === '999') {
+        res.status(404).json({
+            message: "not found"
+            });
+    }else {
+    res.status(200).json({
+        id,
+        name: 'Product 23',
+        price: 2000
+        })
     }
-    res.json(products);
 });
 
 
 
-router.get('/:id', (req, res) => {
+router.post('/:id', (req, res) => {
     const { id } = req.params;
-    res.json({
+    const body = req.body;
+    res.status(201).json({
+        message: 'Created by morenai',
+        data: body,
         id,
-        name:'home2',
-        price:'20000'
+    });
+})
+
+router.patch('/:id', (req, res) => {
+    const { id } = req.params;
+    const body = req.body;
+    res.status(201).json({
+        message: 'update correct with patch, status massage ok',
+        data: body,
+        id,
+    });
+})
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    
+    res.json({
+        message: 'deleted',
+        id,
     });
 });
 
