@@ -20,6 +20,8 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.0.1",
-    "express": "^4.17.1"
+    "@hapi/boom": "^10.0.1",
+    "express": "^4.17.1",
+    "joi": "^17.9.2"
   }
 }

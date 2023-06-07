@@ -1,51 +1,62 @@
-// const { faker } = require('@faker-js/faker');
 const express = require('express');
 
-const router = express.Router(); 
+const ProductsService = require('./../service/product.service')
+const validatorHandler = require('./../middlewares/validator.handler')
+const {createProductSchema, updateProductSchema, getProductSchema} = require('./../schemas/products.schema')
 
-router.get('/:id', (req, res ) => {
-    const{ id } = req.params;
-    if (id === '999') {
-        res.status(404).json({
-            message: "not found"
-            });
-    }else {
-    res.status(200).json({
-        id,
-        name: 'Product 23',
-        price: 2000
-        })
+const router = express.Router(); 
+const service = new ProductsService();
+
+router.get('/', async (req, res) => {
+    const products = await service.find()
+    res.json(products);
+});
+
+router.get('/:id',
+    validatorHandler(getProductSchema, 'params'),
+    async (req, res, next) => {
+    try {
+        const{ id } = req.params;
+        const product = await service.findOne(id);
+        res.json(product);
+    }   catch (error) {
+        next(error);
     }
 });
 
 
 
-router.post('/:id', (req, res) => {
-    const { id } = req.params;
+router.post('/', 
+    validatorHandler(createProductSchema,'body'),
+    async (req, res, next) => {
     const body = req.body;
-    res.status(201).json({
-        message: 'Created by morenai',
-        data: body,
-        id,
+    await service.create(body)
+    .then(result => res.status(201).json(result))
+    .catch(eMessage => {
+        next(eMessage)
     });
 })
-
-router.patch('/:id', (req, res) => {
-    const { id } = req.params;
-    const body = req.body;
-    res.status(201).json({
-        message: 'update correct with patch, status massage ok',
-        data: body,
-        id,
-    });
-})
-router.delete('/:id', (req, res) => {
-    const { id } = req.params;
     
-    res.json({
-        message: 'deleted',
-        id,
-    });
+
+router.patch('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const body = req.body;
+      const product = await service.update(id, body);
+      res.json(product);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.delete('/:id', async(req, res) => {
+    const { id } = req.params;
+    const rta = await service.delete(id);
+    res.json(rta);
 });
 
-module.exports = router
+module.exports = router;
